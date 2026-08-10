@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 app.use(cors());
 app.use(express.json());
-const errorHandler = require("./middleware/errorhandler");
+const errorHandler = require("./middleware/errorHandler");
 
 
 const logger = require("./middleware/logger");
