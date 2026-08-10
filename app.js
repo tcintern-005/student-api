@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
+const errorHandler = require("./middleware/errorhandler");
 
+app.use(express.json());
 const logger = require("./middleware/logger");
 const studentRoutes = require("./routes/studentRoutes");
 
@@ -43,7 +45,7 @@ app.use((req, res) => {
     error: "404 - Route Not Found",
   });
 });
-
+app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
