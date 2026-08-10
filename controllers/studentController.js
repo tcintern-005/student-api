@@ -1,4 +1,4 @@
-const students = require("../models/studentModel");
+const students = require("../models/studentmodel");
 
 // GET all students
 exports.getStudents = (req, res) => {
