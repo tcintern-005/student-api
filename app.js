@@ -1,3 +1,4 @@
+const pool = require("./models/db");
 const cors = require("cors");
 const courseRoutes = require("./routes/courseRoutes");
 const express = require("express");
@@ -51,6 +52,13 @@ app.use((req, res) => {
   });
 });
 app.use(errorHandler);
+pool.query("SELECT NOW()", (err, result) => {
+  if (err) {
+    console.error("Database connection failed:", err.message);
+  } else {
+    console.log("Database connected successfully!");
+  }
+});
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
