@@ -10,19 +10,19 @@ const {
   deleteCourse,
 } = require("../controllers/courseController");
 
-// GET all courses
+// GET all courses - Protected
 router.get("/", authMiddleware, getCourses);
 
-// GET course by ID
-router.get("/:id", getCourseById);
+// GET course by ID - Protected
+router.get("/:id", authMiddleware, getCourseById);
 
-// ADD course
-router.post("/", addCourse);
+// ADD course - Protected
+router.post("/", authMiddleware, addCourse);
 
-// UPDATE course
-router.put("/:id", updateCourse);
+// UPDATE course - Protected
+router.put("/:id", authMiddleware, updateCourse);
 
-// DELETE course
-router.delete("/:id", deleteCourse);
+// DELETE course - Protected
+router.delete("/:id", authMiddleware, deleteCourse);
 
 module.exports = router;
