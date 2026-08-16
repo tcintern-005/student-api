@@ -1,3 +1,4 @@
+const authMiddleware = require("../middleware/authMiddleware");
 const express = require("express");
 const router = express.Router();
 
@@ -10,7 +11,7 @@ const {
 } = require("../controllers/courseController");
 
 // GET all courses
-router.get("/", getCourses);
+router.get("/", authMiddleware, getCourses);
 
 // GET course by ID
 router.get("/:id", getCourseById);

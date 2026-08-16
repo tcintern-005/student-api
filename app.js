@@ -1,3 +1,4 @@
+const authRoutes = require("./routes/authRoutes");
 const pool = require("./models/db");
 const cors = require("cors");
 const courseRoutes = require("./routes/courseRoutes");
@@ -5,9 +6,8 @@ const express = require("express");
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 const errorHandler = require("./middleware/errorHandler");
-
-
 const logger = require("./middleware/logger");
 const studentRoutes = require("./routes/studentRoutes");
 
@@ -15,6 +15,9 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(logger);
+
+// Auth Routes
+app.use("/api/auth", authRoutes);
 
 // Basic Routes
 app.get("/", (req, res) => {
@@ -44,14 +47,20 @@ app.get("/about", (req, res) => {
 // Student Routes
 app.use("/", studentRoutes);
 
+// Course Routes
 app.use("/api/courses", courseRoutes);
+
 // Custom 404 Route
 app.use((req, res) => {
   res.status(404).json({
     error: "404 - Route Not Found",
   });
 });
+
+// Error Handler
 app.use(errorHandler);
+
+// Database Connection Test
 pool.query("SELECT NOW()", (err, result) => {
   if (err) {
     console.error("Database connection failed:", err.message);
@@ -59,6 +68,7 @@ pool.query("SELECT NOW()", (err, result) => {
     console.log("Database connected successfully!");
   }
 });
+
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });

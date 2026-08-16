@@ -1,3 +1,4 @@
+const authMiddleware = require("../middleware/authMiddleware");
 const express = require("express");
 const router = express.Router();
 
@@ -10,7 +11,7 @@ const {
 } = require("../controllers/studentController");
 
 // GET all students
-router.get("/students", getStudents);
+router.get("/students", authMiddleware, getStudents);
 
 // GET student by ID
 router.get("/students/:id", getStudentById);
