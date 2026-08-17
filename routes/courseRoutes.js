@@ -1,4 +1,6 @@
 const authMiddleware = require("../middleware/authMiddleware");
+const validateCourse = require("../middleware/validateCourse");
+
 const express = require("express");
 const router = express.Router();
 
@@ -10,19 +12,33 @@ const {
   deleteCourse,
 } = require("../controllers/courseController");
 
-// GET all courses - Protected
+// GET all courses
 router.get("/", authMiddleware, getCourses);
 
-// GET course by ID - Protected
+// GET course by ID
 router.get("/:id", authMiddleware, getCourseById);
 
-// ADD course - Protected
-router.post("/", authMiddleware, addCourse);
+// CREATE course
+router.post(
+  "/",
+  authMiddleware,
+  validateCourse,
+  addCourse
+);
 
-// UPDATE course - Protected
-router.put("/:id", authMiddleware, updateCourse);
+// UPDATE course
+router.put(
+  "/:id",
+  authMiddleware,
+  validateCourse,
+  updateCourse
+);
 
-// DELETE course - Protected
-router.delete("/:id", authMiddleware, deleteCourse);
+// DELETE course
+router.delete(
+  "/:id",
+  authMiddleware,
+  deleteCourse
+);
 
 module.exports = router;

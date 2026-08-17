@@ -9,9 +9,26 @@ const {
 // GET all courses
 exports.getCourses = async (req, res) => {
   try {
-    const courses = await getAllCourses();
+    let page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 6;
+    const level = req.query.level || "";
 
-    res.status(200).json(courses);
+    if (page < 1) page = 1;
+    if (limit < 1) limit = 6;
+
+    const courses = await getAllCourses({
+      page,
+      limit,
+      level,
+    });
+
+    res.status(200).json({
+      page,
+      limit,
+      level,
+      count: courses.length,
+      courses,
+    });
   } catch (error) {
     console.error("Get courses error:", error);
 
@@ -47,7 +64,12 @@ exports.getCourseById = async (req, res) => {
 // ADD a new course
 exports.addCourse = async (req, res) => {
   try {
-    const { title, instructor, duration, level } = req.body;
+    const {
+      title,
+      instructor,
+      duration,
+      level,
+    } = req.body;
 
     if (!title || !instructor || !duration || !level) {
       return res.status(400).json({
@@ -61,6 +83,7 @@ exports.addCourse = async (req, res) => {
       instructor,
       duration,
       level,
+      owner_id: req.user.id,
     });
 
     res.status(201).json({
@@ -89,6 +112,18 @@ exports.updateCourse = async (req, res) => {
       });
     }
 
+    // Admin can update any course
+    // Normal user can update only their own course
+    if (
+      req.user.role !== "admin" &&
+      existingCourse.owner_id !== req.user.id
+    ) {
+      return res.status(403).json({
+        message:
+          "Access denied. You can only update your own courses.",
+      });
+    }
+
     const {
       title,
       instructor,
@@ -98,8 +133,10 @@ exports.updateCourse = async (req, res) => {
 
     const updatedCourse = await updateCourse(id, {
       title: title || existingCourse.title,
-      instructor: instructor || existingCourse.instructor,
-      duration: duration || existingCourse.duration,
+      instructor:
+        instructor || existingCourse.instructor,
+      duration:
+        duration || existingCourse.duration,
       level: level || existingCourse.level,
     });
 
@@ -121,13 +158,27 @@ exports.deleteCourse = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
 
-    const deletedCourse = await deleteCourse(id);
+    const existingCourse = await getCourseById(id);
 
-    if (!deletedCourse) {
+    if (!existingCourse) {
       return res.status(404).json({
         message: "Course not found",
       });
     }
+
+    // Admin can delete any course
+    // Normal user can delete only their own course
+    if (
+      req.user.role !== "admin" &&
+      existingCourse.owner_id !== req.user.id
+    ) {
+      return res.status(403).json({
+        message:
+          "Access denied. You can only delete your own courses.",
+      });
+    }
+
+    const deletedCourse = await deleteCourse(id);
 
     res.status(200).json({
       message: "Course deleted successfully",
